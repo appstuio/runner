@@ -1,0 +1,43 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update Node tool-cache release tags atomically",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) packageName=(?<packageName>\\S+)\\nARG NODE_\\d+_RELEASE=(?<currentValue>\\S+)"
+      ],
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<build>\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Update Bun while retaining the former primary release",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) packageName=(?<packageName>\\S+)\\nARG BUN_COMPAT_VERSION=\\S+\\nARG BUN_VERSION=(?<currentValue>\\S+)"
+      ],
+      "extractVersionTemplate": "^bun-v(?<version>\\d+\\.\\d+\\.\\d+)$",
+      "versioningTemplate": "semver",
+      "autoReplaceStringTemplate": "# renovate: datasource={{{datasource}}} depName={{{depName}}} packageName={{{packageName}}}\\nARG BUN_COMPAT_VERSION={{{currentValue}}}\\nARG BUN_VERSION={{{newValue}}}"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Keep the Node 22 cache on its release line",
+      "matchDepNames": ["node-22-toolcache"],
+      "allowedVersions": "/^22\\./"
+    },
+    {
+      "description": "Keep the Node 24 cache on its release line",
+      "matchDepNames": ["node-24-toolcache"],
+      "allowedVersions": "/^24\\./"
+    },
+    {
+      "description": "GHCR does not expose release timestamps for the global age gate",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/actions/actions-runner"],
+      "minimumReleaseAge": "0 days"
+    }
+  ]
+}
