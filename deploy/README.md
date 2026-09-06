@@ -6,9 +6,8 @@ The two App Studio scale sets intentionally share one immutable runner image:
 - `byo-large` is the Docker-capable lane. It retains the DinD sidecar.
 
 The values files preserve the existing scale limits, resource sizing, GitHub
-configuration secret, work volume, and large-runner DinD settings. They also
-reference `ghcr-appstuio`, a namespace-local pull secret for the private GHCR
-package. The credential itself must never be committed.
+configuration secret, work volume, and large-runner DinD settings. The runner
+image is public and pinned by digest, so no registry credential is needed.
 
 ## Deploy
 
@@ -16,22 +15,6 @@ On the K3s host, first set the cluster configuration:
 
 ```sh
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-```
-
-Create or rotate the private-package pull secret without putting the token in
-shell history:
-
-```sh
-read -rsp "GitHub PAT with read:packages: " GHCR_READ_TOKEN
-echo
-kubectl create secret docker-registry ghcr-appstuio \
-  --namespace arc-runners \
-  --docker-server ghcr.io \
-  --docker-username andrhlt \
-  --docker-password "$GHCR_READ_TOKEN" \
-  --dry-run=client \
-  --output yaml | kubectl apply -f -
-unset GHCR_READ_TOKEN
 ```
 
 Deploy the checked-in values with the same chart version already installed on

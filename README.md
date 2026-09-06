@@ -28,14 +28,6 @@ the Docker-in-Docker sidecar.
 The checked-in [ARC deployment values](deploy/README.md) are the source of
 truth for the two scale sets.
 
-## Private GHCR access
-
-Publishing uses this repository's `GITHUB_TOKEN`. For a private package, create
-a read-only Kubernetes pull secret in `arc-runners` and reference it from both
-scale-set pod templates:
-
-See the deployment guide for the history-safe secret creation and Helm upgrade
-commands.
-
-Never commit registry credentials or other secrets to this repository or bake
-them into the image.
+The repository and package are public so ARC can pull the pinned image without
+a long-lived registry credential. Publishing still uses the repository's
+ephemeral `GITHUB_TOKEN`. Never commit credentials or bake them into the image.

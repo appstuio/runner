@@ -6,8 +6,6 @@ maxRunners: 4
 
 template:
   spec:
-    imagePullSecrets:
-      - name: ghcr-appstuio
     initContainers:
       - name: init-dind-externals
         image: ghcr.io/appstuio/runner@sha256:62fdc7491f5504a23409cfc61693a20da92b4be366c2a2a4a705ab18eb2c0d99
