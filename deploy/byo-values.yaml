@@ -8,7 +8,7 @@ template:
   spec:
     containers:
       - name: runner
-        image: ghcr.io/appstuio/runner@sha256:62fdc7491f5504a23409cfc61693a20da92b4be366c2a2a4a705ab18eb2c0d99
+        image: ghcr.io/appstuio/runner:latest@sha256:62fdc7491f5504a23409cfc61693a20da92b4be366c2a2a4a705ab18eb2c0d99
         imagePullPolicy: IfNotPresent
         command:
           - /home/runner/run.sh
