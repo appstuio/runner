@@ -1,10 +1,11 @@
-FROM ghcr.io/actions/actions-runner:2.337.0
+FROM ghcr.io/actions/actions-runner:2.337.0@sha256:e5496277be5d09bc968b3d64911b74e219ac4a3f2edce956a3ecf9271bea1ef4
 
 ARG TARGETARCH
 ARG NODE_22_VERSION=22.23.2
 ARG NODE_22_RELEASE=30508424155
 ARG NODE_24_VERSION=24.20.0
 ARG NODE_24_RELEASE=33034074684
+ARG BUN_COMPAT_VERSION=1.4.0
 ARG BUN_VERSION=1.4.2
 
 USER root
@@ -27,13 +28,15 @@ RUN test "${TARGETARCH}" = "amd64" \
         --directory=/opt/hostedtoolcache/node/${NODE_24_VERSION}/x64 \
     && touch /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64.complete
 
-RUN curl --fail --location --retry 3 \
-      "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.zip" \
-      --output /tmp/bun.zip \
-    && unzip -q /tmp/bun.zip -d /tmp/bun \
-    && install -D -m 0755 /tmp/bun/bun-linux-x64/bun /opt/bun/${BUN_VERSION}/bin/bun \
+RUN for version in "${BUN_COMPAT_VERSION}" "${BUN_VERSION}"; do \
+      curl --fail --location --retry 3 \
+        "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-linux-x64.zip" \
+        --output "/tmp/bun-${version}.zip"; \
+      unzip -q "/tmp/bun-${version}.zip" -d "/tmp/bun-${version}"; \
+      install -D -m 0755 "/tmp/bun-${version}/bun-linux-x64/bun" "/opt/bun/${version}/bin/bun"; \
+    done \
     && ln -s /opt/bun/${BUN_VERSION}/bin/bun /usr/local/bin/bun \
-    && rm -rf /tmp/bun /tmp/bun.zip
+    && rm -rf /tmp/bun-*
 
 RUN ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/node /usr/local/bin/node \
     && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/npm /usr/local/bin/npm \

@@ -7,7 +7,7 @@ The image deliberately contains only fleet-wide tooling:
 
 - GitHub Actions Runner 2.337.0
 - Node.js 22.23.2 and 24.20.0 in `RUNNER_TOOL_CACHE`
-- Bun 1.4.2 on `PATH`
+- Bun 1.4.2 on `PATH`, plus Bun 1.4.0 for repositories not yet upgraded
 
 Application dependencies do not belong in this image. Each repository remains
 responsible for installing its dependencies from its lockfile.
