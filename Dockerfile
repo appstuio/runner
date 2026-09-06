@@ -1,0 +1,53 @@
+FROM ghcr.io/actions/actions-runner:2.337.0
+
+ARG TARGETARCH
+ARG NODE_22_VERSION=22.23.2
+ARG NODE_22_RELEASE=30508424155
+ARG NODE_24_VERSION=24.20.0
+ARG NODE_24_RELEASE=33034074684
+ARG BUN_VERSION=1.4.2
+
+USER root
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends ca-certificates curl unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN test "${TARGETARCH}" = "amd64" \
+    && install -d /opt/hostedtoolcache/node/${NODE_22_VERSION}/x64 \
+    && curl --fail --location --retry 3 \
+      "https://github.com/actions/node-versions/releases/download/${NODE_22_VERSION}-${NODE_22_RELEASE}/node-${NODE_22_VERSION}-linux-x64.tar.gz" \
+      | tar --extract --gzip --strip-components=1 \
+        --directory=/opt/hostedtoolcache/node/${NODE_22_VERSION}/x64 \
+    && touch /opt/hostedtoolcache/node/${NODE_22_VERSION}/x64.complete \
+    && install -d /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64 \
+    && curl --fail --location --retry 3 \
+      "https://github.com/actions/node-versions/releases/download/${NODE_24_VERSION}-${NODE_24_RELEASE}/node-${NODE_24_VERSION}-linux-x64.tar.gz" \
+      | tar --extract --gzip --strip-components=1 \
+        --directory=/opt/hostedtoolcache/node/${NODE_24_VERSION}/x64 \
+    && touch /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64.complete
+
+RUN curl --fail --location --retry 3 \
+      "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.zip" \
+      --output /tmp/bun.zip \
+    && unzip -q /tmp/bun.zip -d /tmp/bun \
+    && install -D -m 0755 /tmp/bun/bun-linux-x64/bun /opt/bun/${BUN_VERSION}/bin/bun \
+    && ln -s /opt/bun/${BUN_VERSION}/bin/bun /usr/local/bin/bun \
+    && rm -rf /tmp/bun /tmp/bun.zip
+
+RUN ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/node /usr/local/bin/node \
+    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/npm /usr/local/bin/npm \
+    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/npx /usr/local/bin/npx \
+    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/corepack /usr/local/bin/corepack
+
+ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
+ENV RUNNER_TOOL_CACHE=/opt/hostedtoolcache
+ENV BUN_INSTALL=/opt/bun/1.4.2
+ENV PATH=/opt/bun/1.4.2/bin:${PATH}
+
+RUN chown -R runner:runner /opt/hostedtoolcache /opt/bun \
+    && node --version \
+    && npm --version \
+    && bun --version
+
+USER runner
