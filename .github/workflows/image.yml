@@ -2,8 +2,18 @@ name: Runner image
 
 on:
   pull_request:
+    paths:
+      - .dockerignore
+      - .github/workflows/image.yml
+      - Dockerfile
+      - renovate.json
   push:
     branches: [main]
+    paths:
+      - .dockerignore
+      - .github/workflows/image.yml
+      - Dockerfile
+      - renovate.json
   workflow_dispatch:
 
 permissions:

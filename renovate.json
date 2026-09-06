@@ -20,6 +20,15 @@
       "extractVersionTemplate": "^bun-v(?<version>\\d+\\.\\d+\\.\\d+)$",
       "versioningTemplate": "semver",
       "autoReplaceStringTemplate": "# renovate: datasource={{{datasource}}} depName={{{depName}}} packageName={{{packageName}}}\\nARG BUN_COMPAT_VERSION={{{currentValue}}}\\nARG BUN_VERSION={{{newValue}}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Update checked-in ARC values to the newest published image digest",
+      "managerFilePatterns": ["/^deploy/byo(?:-large)?-values\\.yaml$/"],
+      "matchStrings": [
+        "image: (?<depName>ghcr\\.io/appstuio/runner):(?<currentValue>latest)@(?<currentDigest>sha256:[a-f0-9]+)"
+      ],
+      "datasourceTemplate": "docker"
     }
   ],
   "packageRules": [
@@ -36,7 +45,10 @@
     {
       "description": "GHCR does not expose release timestamps for the global age gate",
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["ghcr.io/actions/actions-runner"],
+      "matchPackageNames": [
+        "ghcr.io/actions/actions-runner",
+        "ghcr.io/appstuio/runner"
+      ],
       "minimumReleaseAge": "0 days"
     }
   ]

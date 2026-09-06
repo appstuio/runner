@@ -41,6 +41,9 @@ updated atomically so their version and release identifiers cannot diverge.
 When Bun advances, the former primary version becomes the compatibility version.
 
 Runtime update pull requests must pass the image build and smoke test before
-merging. A merge publishes a new image, but it does not mutate the live ARC
-installation: `deploy/byo-values.yaml` and `deploy/byo-large-values.yaml` remain
-pinned to an immutable, deliberately deployed image digest.
+merging. A merge publishes a new image; the next Renovate run updates
+`deploy/byo-values.yaml` and `deploy/byo-large-values.yaml` together to its
+immutable digest. Deploy-values-only changes do not rebuild the image, which
+avoids a digest-update loop. Updating these source-of-truth values does not
+mutate the live ARC installation: applying them to K3s remains a deliberate
+deployment step.
