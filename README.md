@@ -25,19 +25,17 @@ Deploy an immutable digest in ARC after validating the published image. Both
 `byo` and `byo-large` use this same runner image; only the large scale set adds
 the Docker-in-Docker sidecar.
 
+The checked-in [ARC deployment values](deploy/README.md) are the source of
+truth for the two scale sets.
+
 ## Private GHCR access
 
 Publishing uses this repository's `GITHUB_TOKEN`. For a private package, create
 a read-only Kubernetes pull secret in `arc-runners` and reference it from both
 scale-set pod templates:
 
-```sh
-kubectl create secret docker-registry ghcr-appstuio \
-  --namespace arc-runners \
-  --docker-server ghcr.io \
-  --docker-username '<github-user>' \
-  --docker-password '<classic-pat-with-read-packages>'
-```
+See the deployment guide for the history-safe secret creation and Helm upgrade
+commands.
 
 Never commit registry credentials or other secrets to this repository or bake
 them into the image.

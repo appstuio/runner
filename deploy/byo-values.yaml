@@ -1,0 +1,29 @@
+githubConfigUrl: https://github.com/appstuio
+githubConfigSecret: arc-github-config
+runnerScaleSetName: byo
+minRunners: 1
+maxRunners: 8
+
+template:
+  spec:
+    imagePullSecrets:
+      - name: ghcr-appstuio
+    containers:
+      - name: runner
+        image: ghcr.io/appstuio/runner@sha256:62fdc7491f5504a23409cfc61693a20da92b4be366c2a2a4a705ab18eb2c0d99
+        imagePullPolicy: IfNotPresent
+        command:
+          - /home/runner/run.sh
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1536Mi
+          requests:
+            cpu: 750m
+            memory: 1536Mi
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+    volumes:
+      - name: work
+        emptyDir: {}

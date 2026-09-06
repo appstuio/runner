@@ -1,0 +1,93 @@
+githubConfigUrl: https://github.com/appstuio
+githubConfigSecret: arc-github-config
+runnerScaleSetName: byo-large
+minRunners: 0
+maxRunners: 4
+
+template:
+  spec:
+    imagePullSecrets:
+      - name: ghcr-appstuio
+    initContainers:
+      - name: init-dind-externals
+        image: ghcr.io/appstuio/runner@sha256:62fdc7491f5504a23409cfc61693a20da92b4be366c2a2a4a705ab18eb2c0d99
+        imagePullPolicy: IfNotPresent
+        command:
+          - cp
+          - -r
+          - /home/runner/externals/.
+          - /home/runner/tmpDir/
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        volumeMounts:
+          - name: dind-externals
+            mountPath: /home/runner/tmpDir
+    containers:
+      - name: runner
+        image: ghcr.io/appstuio/runner@sha256:62fdc7491f5504a23409cfc61693a20da92b4be366c2a2a4a705ab18eb2c0d99
+        imagePullPolicy: IfNotPresent
+        command:
+          - /home/runner/run.sh
+        env:
+          - name: DOCKER_HOST
+            value: unix:///var/run/docker.sock
+          - name: RUNNER_WAIT_FOR_DOCKER_IN_SECONDS
+            value: "120"
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1536Mi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+          - name: dind-sock
+            mountPath: /var/run
+      - name: dind
+        image: docker:dind
+        args:
+          - dockerd
+          - --host=unix:///var/run/docker.sock
+          - --group=$(DOCKER_GROUP_GID)
+          - --mtu=1450
+        env:
+          - name: DOCKER_GROUP_GID
+            value: "123"
+        restartPolicy: Always
+        securityContext:
+          privileged: true
+        startupProbe:
+          exec:
+            command:
+              - docker
+              - info
+          failureThreshold: 24
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2560Mi
+          requests:
+            cpu: 500m
+            memory: 2Gi
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+          - name: dind-sock
+            mountPath: /var/run
+          - name: dind-externals
+            mountPath: /home/runner/externals
+    volumes:
+      - name: work
+        emptyDir: {}
+      - name: dind-sock
+        emptyDir: {}
+      - name: dind-externals
+        emptyDir: {}
