@@ -5,9 +5,10 @@ Actions Runner Controller scale sets.
 
 The image deliberately contains only fleet-wide tooling:
 
-- GitHub Actions Runner 2.337.0
-- Node.js 22.23.2 and 24.20.0 in `RUNNER_TOOL_CACHE`
-- Bun 1.4.2 on `PATH`, plus Bun 1.4.0 for repositories not yet upgraded
+- the pinned GitHub Actions Runner base image
+- the current supported Node.js 22 and 24 patches in `RUNNER_TOOL_CACHE`
+- the current Bun release on `PATH`, plus the previous baked release for
+  repositories not yet upgraded
 
 Application dependencies do not belong in this image. Each repository remains
 responsible for installing its dependencies from its lockfile.
@@ -31,3 +32,15 @@ truth for the two scale sets.
 The repository and package are public so ARC can pull the pinned image without
 a long-lived registry credential. Publishing still uses the repository's
 ephemeral `GITHUB_TOKEN`. Never commit credentials or bake them into the image.
+
+## Runtime updates
+
+The shared App Studio Renovate runner keeps the base runner image, Node.js 22,
+Node.js 24, Bun, and workflow actions current. Node tool-cache release tags are
+updated atomically so their version and release identifiers cannot diverge.
+When Bun advances, the former primary version becomes the compatibility version.
+
+Runtime update pull requests must pass the image build and smoke test before
+merging. A merge publishes a new image, but it does not mutate the live ARC
+installation: `deploy/byo-values.yaml` and `deploy/byo-large-values.yaml` remain
+pinned to an immutable, deliberately deployed image digest.
