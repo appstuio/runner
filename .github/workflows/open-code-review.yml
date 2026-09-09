@@ -10,6 +10,18 @@ permissions:
 
 jobs:
   code-review:
-    uses: appstuio/workflows/.github/workflows/open-code-review.yml@main
-    secrets:
-      OCR_LLM_AUTH_TOKEN: ${{ secrets.OCR_LLM_AUTH_TOKEN }}
+    runs-on: byo
+    timeout-minutes: 30
+    steps:
+      - name: Add global npm binaries to PATH
+        run: echo "$(npm prefix -g)/bin" >> "$GITHUB_PATH"
+
+      - name: Run OpenCodeReview
+        uses: alibaba/open-code-review@main
+        env:
+          NPM_CONFIG_ALLOW_SCRIPTS: "@alibaba-group/open-code-review"
+        with:
+          llm_url: ${{ vars.OCR_LLM_URL }}
+          llm_auth_token: ${{ secrets.OCR_LLM_AUTH_TOKEN }}
+          llm_model: ${{ vars.OCR_LLM_MODEL }}
+          llm_use_anthropic: 'false'
