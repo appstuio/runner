@@ -17,11 +17,17 @@ jobs:
       cancel-in-progress: true
     steps:
       - name: Configure OCR npm binaries
-        run: echo "${{ runner.temp }}/ocr-npm-global/bin" >> "$GITHUB_PATH"
+        env:
+          OCR_NPM_PREFIX: ${{ runner.temp }}/ocr-npm-global
+          OCR_BASH_ENV: ${{ runner.temp }}/ocr-bash-env
+        run: |
+          printf 'export PATH="%s/bin:$PATH"\n' "$OCR_NPM_PREFIX" > "$OCR_BASH_ENV"
+          echo "$OCR_NPM_PREFIX/bin" >> "$GITHUB_PATH"
 
       - name: Run OpenCodeReview
         uses: alibaba/open-code-review@b3badd376fcf52f05a10aaf0a334c677dc8e0ddc # v1.11.3
         env:
+          BASH_ENV: ${{ runner.temp }}/ocr-bash-env
           NPM_CONFIG_ALLOW_SCRIPTS: "@alibaba-group/open-code-review"
           # Use a deterministic prefix so the CLI remains on PATH across composite steps.
           NPM_CONFIG_PREFIX: ${{ runner.temp }}/ocr-npm-global
