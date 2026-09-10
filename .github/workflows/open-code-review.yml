@@ -16,21 +16,27 @@ jobs:
       group: ocr-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: true
     steps:
+      - name: Prepare shared OCR workspace
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
       - name: Configure OCR npm binaries
         env:
-          OCR_NPM_PREFIX: ${{ runner.temp }}/ocr-npm-global
-          OCR_BASH_ENV: ${{ runner.temp }}/ocr-bash-env
+          OCR_NPM_PREFIX: ${{ github.workspace }}/.git/ocr-npm-global
+          OCR_BASH_ENV: ${{ github.workspace }}/.git/ocr-bash-env
         run: |
+          mkdir -p "$OCR_NPM_PREFIX"
           printf 'export PATH="%s/bin:$PATH"\n' "$OCR_NPM_PREFIX" > "$OCR_BASH_ENV"
           echo "$OCR_NPM_PREFIX/bin" >> "$GITHUB_PATH"
 
       - name: Run OpenCodeReview
         uses: alibaba/open-code-review@b3badd376fcf52f05a10aaf0a334c677dc8e0ddc # v1.11.3
         env:
-          BASH_ENV: ${{ runner.temp }}/ocr-bash-env
+          BASH_ENV: ${{ github.workspace }}/.git/ocr-bash-env
           NPM_CONFIG_ALLOW_SCRIPTS: "@alibaba-group/open-code-review"
-          # Use a deterministic prefix so the CLI remains on PATH across composite steps.
-          NPM_CONFIG_PREFIX: ${{ runner.temp }}/ocr-npm-global
+          # Install on the shared workspace volume but outside tracked files.
+          NPM_CONFIG_PREFIX: ${{ github.workspace }}/.git/ocr-npm-global
         with:
           llm_url: ${{ vars.OCR_LLM_URL }}
           llm_auth_token: ${{ secrets.OCR_LLM_AUTH_TOKEN }}
