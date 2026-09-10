@@ -8,7 +8,7 @@ template:
   spec:
     initContainers:
       - name: init-dind-externals
-        image: ghcr.io/appstuio/runner:latest@sha256:c7b2ccab1baf374405935a5d87bfa6f34e57e6e09130be7c5a43c7a5f920fca3
+        image: ghcr.io/appstuio/runner:latest@sha256:bc93be1f1c651c50857ed22360466f7c7d277ae6f80f922ee9375bdff05324df
         imagePullPolicy: IfNotPresent
         command:
           - cp
@@ -27,7 +27,7 @@ template:
             mountPath: /home/runner/tmpDir
     containers:
       - name: runner
-        image: ghcr.io/appstuio/runner:latest@sha256:c7b2ccab1baf374405935a5d87bfa6f34e57e6e09130be7c5a43c7a5f920fca3
+        image: ghcr.io/appstuio/runner:latest@sha256:bc93be1f1c651c50857ed22360466f7c7d277ae6f80f922ee9375bdff05324df
         imagePullPolicy: IfNotPresent
         command:
           - /home/runner/run.sh
