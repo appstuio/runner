@@ -12,6 +12,9 @@ jobs:
   code-review:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    concurrency:
+      group: ocr-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Configure OCR npm binaries
         run: echo "${{ runner.temp }}/ocr-npm-global/bin" >> "$GITHUB_PATH"
