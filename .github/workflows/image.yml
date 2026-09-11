@@ -65,4 +65,13 @@ jobs:
             test "$(node --version)" = "v${node_24_version}"
             test -x "$RUNNER_TOOL_CACHE/node/${node_22_version}/x64/bin/node"
             test -x "$RUNNER_TOOL_CACHE/node/${node_24_version}/x64/bin/node"
+            test "$(npm prefix --global)" = /opt/node
+            package="$(mktemp -d)"
+            printf "%s\n" \
+              "{\"name\":\"runner-path-smoke\",\"version\":\"1.0.0\",\"bin\":{\"runner-path-smoke\":\"cli.js\"}}" \
+              > "$package/package.json"
+            printf "%s\n" "#!/usr/bin/env node" "console.log(\"ok\")" > "$package/cli.js"
+            chmod +x "$package/cli.js"
+            npm install --global "$package"
+            test "$(runner-path-smoke)" = ok
           '

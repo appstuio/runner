@@ -42,10 +42,11 @@ RUN for version in "${BUN_COMPAT_VERSION}" "${BUN_VERSION}"; do \
     && rm -rf /tmp/bun-*
 
 RUN NODE_24_VERSION="${NODE_24_RELEASE%%-*}" \
-    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/node /usr/local/bin/node \
-    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/npm /usr/local/bin/npm \
-    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/npx /usr/local/bin/npx \
-    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64/bin/corepack /usr/local/bin/corepack
+    && ln -s /opt/hostedtoolcache/node/${NODE_24_VERSION}/x64 /opt/node \
+    && ln -s /opt/node/bin/node /usr/local/bin/node \
+    && ln -s /opt/node/bin/npm /usr/local/bin/npm \
+    && ln -s /opt/node/bin/npx /usr/local/bin/npx \
+    && ln -s /opt/node/bin/corepack /usr/local/bin/corepack
 
 ENV AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
 ENV RUNNER_TOOL_CACHE=/opt/hostedtoolcache
@@ -53,7 +54,7 @@ ENV NODE_22_RELEASE=${NODE_22_RELEASE}
 ENV NODE_24_RELEASE=${NODE_24_RELEASE}
 ENV BUN_COMPAT_INSTALL=/opt/bun/${BUN_COMPAT_VERSION}
 ENV BUN_INSTALL=/opt/bun/${BUN_VERSION}
-ENV PATH=/opt/bun/${BUN_VERSION}/bin:${PATH}
+ENV PATH=/opt/bun/${BUN_VERSION}/bin:/opt/node/bin:${PATH}
 
 RUN chown -R runner:runner /opt/hostedtoolcache /opt/bun \
     && node --version \
