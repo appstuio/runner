@@ -6,7 +6,8 @@ Actions Runner Controller scale sets.
 The image deliberately contains only fleet-wide tooling:
 
 - the pinned GitHub Actions Runner base image
-- the current supported Node.js 22 and 24 patches in `RUNNER_TOOL_CACHE`
+- the current supported Node.js 22 and 24 patches in `RUNNER_TOOL_CACHE`, with
+  Node.js 24 and npm-installed global executables available on `PATH`
 - the current Bun release on `PATH`, plus the previous baked release for
   repositories not yet upgraded
 
