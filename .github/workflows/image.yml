@@ -63,6 +63,9 @@ jobs:
             test "$(bun --version)" = "$(basename "$BUN_INSTALL")"
             test "$("$BUN_COMPAT_INSTALL/bin/bun" --version)" = "$(basename "$BUN_COMPAT_INSTALL")"
             test "$(node --version)" = "v${node_24_version}"
+            pr-agent --version | grep --fixed-strings --quiet "$PR_AGENT_VERSION"
+            pr-agent --help >/dev/null
+            /opt/pr-agent/bin/python -c "import sys; assert sys.version_info[:2] == (3, 12)"
             test -x "$RUNNER_TOOL_CACHE/node/${node_22_version}/x64/bin/node"
             test -x "$RUNNER_TOOL_CACHE/node/${node_24_version}/x64/bin/node"
             test "$(npm prefix --global)" = /opt/node
