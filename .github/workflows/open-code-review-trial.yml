@@ -1,0 +1,16 @@
+name: OpenCodeReview Trial
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  code-review:
+    if: github.event.pull_request.number == 13
+    uses: appstuio/workflows/.github/workflows/open-code-review.yml@main
+    secrets:
+      OCR_LLM_AUTH_TOKEN: ${{ secrets.OCR_LLM_AUTH_TOKEN }}
