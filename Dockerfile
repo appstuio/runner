@@ -8,12 +8,19 @@ ARG NODE_24_RELEASE=24.20.0-33034074684
 # renovate: datasource=github-releases depName=bun packageName=oven-sh/bun
 ARG BUN_COMPAT_VERSION=1.4.0
 ARG BUN_VERSION=1.4.2
+# renovate: datasource=pypi depName=pr-agent
+ARG PR_AGENT_VERSION=0.45.0
 
 USER root
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends ca-certificates curl unzip \
+    && apt-get install --yes --no-install-recommends ca-certificates curl git python3 python3-venv unzip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m venv /opt/pr-agent \
+    && /opt/pr-agent/bin/pip install --no-cache-dir --disable-pip-version-check \
+      "pr-agent==${PR_AGENT_VERSION}" \
+    && ln -s /opt/pr-agent/bin/pr-agent /usr/local/bin/pr-agent
 
 RUN NODE_22_VERSION="${NODE_22_RELEASE%%-*}" \
     && NODE_24_VERSION="${NODE_24_RELEASE%%-*}" \
@@ -54,11 +61,13 @@ ENV NODE_22_RELEASE=${NODE_22_RELEASE}
 ENV NODE_24_RELEASE=${NODE_24_RELEASE}
 ENV BUN_COMPAT_INSTALL=/opt/bun/${BUN_COMPAT_VERSION}
 ENV BUN_INSTALL=/opt/bun/${BUN_VERSION}
+ENV PR_AGENT_VERSION=${PR_AGENT_VERSION}
 ENV PATH=/opt/bun/${BUN_VERSION}/bin:/opt/node/bin:${PATH}
 
 RUN chown -R runner:runner /opt/hostedtoolcache /opt/bun \
     && node --version \
     && npm --version \
-    && bun --version
+    && bun --version \
+    && test "$(pr-agent --version)" = "pr-agent ${PR_AGENT_VERSION}"
 
 USER runner
