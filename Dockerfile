@@ -68,6 +68,7 @@ RUN chown -R runner:runner /opt/hostedtoolcache /opt/bun \
     && node --version \
     && npm --version \
     && bun --version \
-    && test "$(pr-agent --version)" = "pr-agent ${PR_AGENT_VERSION}"
+    && pr-agent --version | grep --fixed-strings --quiet "${PR_AGENT_VERSION}" \
+    && pr-agent --help >/dev/null
 
 USER runner
