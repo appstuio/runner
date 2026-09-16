@@ -4,7 +4,7 @@ ARG TARGETARCH
 # renovate: datasource=github-releases depName=node-22-toolcache packageName=actions/node-versions
 ARG NODE_22_RELEASE=22.23.2-30508424155
 # renovate: datasource=github-releases depName=node-24-toolcache packageName=actions/node-versions
-ARG NODE_24_RELEASE=24.20.0-33034074684
+ARG NODE_24_RELEASE=24.21.0-34304089047
 # renovate: datasource=github-releases depName=bun packageName=oven-sh/bun
 ARG BUN_COMPAT_VERSION=1.4.0
 ARG BUN_VERSION=1.4.2
