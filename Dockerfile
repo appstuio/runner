@@ -2,7 +2,7 @@ FROM ghcr.io/actions/actions-runner:2.337.0@sha256:e5496277be5d09bc968b3d64911b7
 
 ARG TARGETARCH
 # renovate: datasource=github-releases depName=node-22-toolcache packageName=actions/node-versions
-ARG NODE_22_RELEASE=22.23.2-30508424155
+ARG NODE_22_RELEASE=22.23.3-35947643734
 # renovate: datasource=github-releases depName=node-24-toolcache packageName=actions/node-versions
 ARG NODE_24_RELEASE=24.21.0-34304089047
 # renovate: datasource=github-releases depName=bun packageName=oven-sh/bun
