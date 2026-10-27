@@ -11,11 +11,18 @@ image is public and pinned by digest, so no registry credential is needed.
 
 ## Capacity
 
-The 15 GiB host runs at most two normal runners and one Docker-capable runner.
-Each runner container requests and is limited to 3 GiB. The Docker sidecar retains
+The 15 GiB host is capped at four normal runners and one Docker-capable runner.
+Each runner container requests and is limited to 2 GiB. The Docker sidecar retains
 its 2 GiB request and 2.5 GiB limit, making the maximum combined workload memory
-limits 11.5 GiB. This leaves roughly 3.5 GiB for K3s, the operating system, and
-controllers; other host workloads must also fit within that headroom.
+limits 12.5 GiB. This leaves roughly 2.5 GiB for K3s, the operating system, and
+controllers; other host workloads must also fit within that headroom. The 2 GiB
+runner limit is a trial increase above the observed 1.5 GiB OOM boundary,
+not yet proof that the failing dependency installations fit.
+
+ARC scales each pool with assigned jobs up to its own cap. Kubernetes schedules
+pods against declared CPU and memory requests and node allocatable resources,
+so actual simultaneous jobs can be lower. These caps do not automatically lend
+unused capacity between pools or resize containers based on current free RAM.
 
 The previous 1.5 GiB runner limit caused cgroup OOM kills during Bun dependency
 installation, including the runner agent itself. More free memory on the host
