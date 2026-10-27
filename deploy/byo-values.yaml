@@ -2,7 +2,7 @@ githubConfigUrl: https://github.com/appstuio
 githubConfigSecret: arc-github-config
 runnerScaleSetName: byo
 minRunners: 1
-maxRunners: 2
+maxRunners: 4
 
 template:
   spec:
@@ -15,10 +15,10 @@ template:
         resources:
           limits:
             cpu: "1"
-            memory: 3Gi
+            memory: 2Gi
           requests:
             cpu: 750m
-            memory: 3Gi
+            memory: 2Gi
         volumeMounts:
           - name: work
             mountPath: /home/runner/_work
