@@ -5,9 +5,21 @@ The two App Studio scale sets intentionally share one immutable runner image:
 - `byo` is the normal lane. It has no Docker daemon or Docker startup wait.
 - `byo-large` is the Docker-capable lane. It retains the DinD sidecar.
 
-The values files preserve the existing scale limits, resource sizing, GitHub
-configuration secret, work volume, and large-runner DinD settings. The runner
+The values files preserve the GitHub configuration secret, work volume, and
+large-runner DinD settings. The runner
 image is public and pinned by digest, so no registry credential is needed.
+
+## Capacity
+
+The 15 GiB host runs at most two normal runners and one Docker-capable runner.
+Each runner container requests and is limited to 3 GiB. The Docker sidecar retains
+its 2 GiB request and 2.5 GiB limit, making the maximum combined workload memory
+limits 11.5 GiB. This leaves roughly 3.5 GiB for K3s, the operating system, and
+controllers; other host workloads must also fit within that headroom.
+
+The previous 1.5 GiB runner limit caused cgroup OOM kills during Bun dependency
+installation, including the runner agent itself. More free memory on the host
+cannot compensate for a container reaching its own hard limit.
 
 ## Deploy
 
