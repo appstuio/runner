@@ -6,6 +6,7 @@ Actions Runner Controller scale sets.
 The image deliberately contains only fleet-wide tooling:
 
 - the pinned GitHub Actions Runner base image
+- `libatomic1`, required by Node.js 26 downloaded by workflow setup actions
 - the current supported Node.js 22 and 24 patches in `RUNNER_TOOL_CACHE`, with
   Node.js 24 and npm-installed global executables available on `PATH`
 - the current Bun release on `PATH`, plus the previous baked release for

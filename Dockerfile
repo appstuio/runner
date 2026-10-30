@@ -14,7 +14,7 @@ ARG PR_AGENT_VERSION=0.45.0
 USER root
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends ca-certificates curl git python3 python3-venv unzip \
+    && apt-get install --yes --no-install-recommends ca-certificates curl git libatomic1 python3 python3-venv unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m venv /opt/pr-agent \
